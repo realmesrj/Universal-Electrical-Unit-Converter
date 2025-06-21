@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Electrical Unit Converter</title>
+    <style>
+        /* Light Mode Styles (will be overridden by dark mode) */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(to right, #6a11cb 0%, #2575fc 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333;
+            flex-direction: column;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+            animation: fadeIn 0.8s ease-out;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            position: relative; /* For positioning the loader */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 5px; /* Reduced margin to bring slogan closer */
+            font-size: 1.8em;
+            transition: color 0.3s ease;
+        }
+
+        .slogan { /* New style for the slogan */
+            text-align: center;
+            color: #555; /* Slightly darker than light mode text */
+            margin-top: 0;
+            margin-bottom: 25px; /* Add some space below the slogan */
+            font-size: 1em;
+            transition: color 0.3s ease;
+        }
+
+
+        .converter {
+            margin-bottom: 20px;
+        }
+
+        .converter label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        .converter select,
+        .converter input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cdd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .converter select:focus,
+        .converter input[type="number"]:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.3);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(37, 117, 252, 0.3);
+        }
+
+        button:hover {
+            background-color: #1a5bbd;
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            background-color: #13469c;
+            transform: translateY(0);
+        }
+
+        .result {
+            font-weight: bold;
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #e9f7ef;
+            border: 1px solid #d4edda;
+            border-radius: 8px;
+            color: #155724;
+            text-align: center;
+            font-size: 1.1em;
+            word-wrap: break-word;
+            opacity: 1;
+            transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .result p {
+            margin: 0;
+        }
+
+        .footer {
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            color: #e0e0e0;
+            font-size: 0.9em;
+            padding-top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .footer hr {
+            border: none;
+            border-top: 1px solid #999;
+            margin: 15px auto;
+            width: 80%;
+            transition: border-color 0.3s ease;
+        }
+
+        .footer-supervision {
+            margin-bottom: 10px;
+            color: #d0d0d0;
+            transition: color 0.3s ease;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background: #121212;
+            color: #f0f0f0;
+        }
+
+        body.dark-mode .container {
+            background-color: #1e1e1e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        body.dark-mode h1 {
+            color: #f0f0f0;
+        }
+        
+        body.dark-mode .slogan { /* Dark mode style for the slogan */
+            color: #b0b0b0; /* Lighter color for dark mode */
+        }
+
+        body.dark-mode .converter label {
+            color: #d0d0d0;
+        }
+
+        body.dark-mode .converter select,
+        body.dark-mode .converter input[type="number"] {
+            background-color: #333;
+            color: #f0f0f0;
+            border-color: #555;
+        }
+
+        body.dark-mode .converter select:focus,
+        body.dark-mode .converter input[type="number"]:focus {
+            border-color: #2575fc;
+            box-shadow: 0 0 8px rgba(37, 117, 252, 0.5);
+        }
+
+        body.dark-mode .result {
+            background-color: #2e3440;
+            border-color: #4c566a;
+            color: #8fbcbb;
+        }
+
+        body.dark-mode .footer {
+            color: #999;
+        }
+
+        body.dark-mode .footer hr {
+            border-top-color: #666;
+        }
+
+        body.dark-mode .footer-supervision {
+            color: #777;
+        }
+
+        /* Circular Progress Bar Styles */
+        .progress-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px; /* Match container border-radius */
+            z-index: 10; /* Ensure it's above other content */
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .progress-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .progress-bar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3); /* Lighter border for visibility in dark mode */
+            border-left-color: #2575fc; /* Primary color for the spinning part */
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+                margin-bottom: 20px;
+            }
+
+            h1 {
+                font-size: 1.2em;
+            }
+
+            .slogan {
+                font-size: 0.9em;
+            }
+
+            button {
+                font-size: 1em;
+                padding: 10px;
+            }
+
+            .converter select,
+            .converter input[type="number"] {
+                font-size: 0.95em;
+                padding: 10px;
+            }
+
+            .footer {
+                padding: 0 10px;
+            }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div class="container">
+        <h1>MADHUPUR POLYTECHNIC</h1>
+        <p class="slogan">Universal Electrical Unit Converter</p>
+
+        <div class="converter">
+            <label for="value">Value:</label>
+            <input type="number" id="value" placeholder="Enter value">
+        </div>
+
+        <div class="converter">
+            <label for="fromUnit">From:</label>
+            <select id="fromUnit">
+                <optgroup label="Voltage">
+                    <option value="V">Volts (V)</option>
+                    <option value="mV">Millivolts (mV)</option>
+                    <option value="kV">Kilovolts (kV)</option>
+                </optgroup>
+                <optgroup label="Current">
+                    <option value="A">Amperes (A)</option>
+                    <option value="mA">Milliamperes (mA)</option>
+                    <option value="kA">Kiloamperes (kA)</option>
+                </optgroup>
+                 <optgroup label="Resistance">
+                    <option value="Ohm">Ohms (Ω)</option>
+                    <option value="kOhm">Kiloohms (kΩ)</option>
+                    <option value="MOhm">Megaohms (MΩ)</option>
+                </optgroup>
+                <optgroup label="Power">
+                    <option value="W">Watts (W)</option>
+                    <option value="kW">Kilowatts (kW)</option>
+                    <option value="MW">Megawatts (MW)</option>
+                    <option value="HP">Horsepower (HP)</option>
+                </optgroup>
+                 <optgroup label="Energy">
+                    <option value="Wh">Watt-hours (Wh)</option>
+                    <option value="kWh">Kilowatt-hours (kWh)</option>
+                    <option value="J">Joules (J)</option>
+                </optgroup>
+                <optgroup label="Frequency">
+                    <option value="Hz">Hertz (Hz)</option>
+                    <option value="kHz">Kilohertz (kHz)</option>
+                     <option value="MHz">Megahertz (MHz)</option>
+                </optgroup>
+                 <optgroup label="Capacitance">
+                    <option value="F">Farads (F)</option>
+                    <option value="pF">Picofarads (pF)</option>
+                    <option value="nF">Nanofarads (nF)</option>
+                    <option value="uF">Microfarads (µF)</option>
+                </optgroup>
+                <optgroup label="Inductance">
+                    <option value="H">Henries (H)</option>
+                    <option value="mH">Millihenries (mH)</option>
+                    <option value="uH">Microhenries (µH)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <div class="converter">
+            <label for="toUnit">To:</label>
+            <select id="toUnit">
+                 <optgroup label="Voltage">
+                    <option value="V">Volts (V)</option>
+                    <option value="mV">Millivolts (mV)</option>
+                    <option value="kV">Kilovolts (kV)</option>
+                </optgroup>
+                <optgroup label="Current">
+                    <option value="A">Amperes (A)</option>
+                    <option value="mA">Milliamperes (mA)</option>
+                    <option value="kA">Kiloamperes (kA)</option>
+                </optgroup>
+                 <optgroup label="Resistance">
+                    <option value="Ohm">Ohms (Ω)</option>
+                    <option value="kOhm">Kiloohms (kΩ)</option>
+                    <option value="MOhm">Megaohms (MΩ)</option>
+                </optgroup>
+                <optgroup label="Power">
+                    <option value="W">Watts (W)</option>
+                    <option value="kW">Kilowatts (kW)</option>
+                    <option value="MW">Megawatts (MW)</option>
+                    <option value="HP">Horsepower (HP)</option>
+                </optgroup>
+                 <optgroup label="Energy">
+                    <option value="Wh">Watt-hours (Wh)</option>
+                    <option value="kWh">Kilowatt-hours (kWh)</option>
+                    <option value="J">Joules (J)</option>
+                </optgroup>
+                <optgroup label="Frequency">
+                    <option value="Hz">Hertz (Hz)</option>
+                    <option value="kHz">Kilohertz (kHz)</option>
+                     <option value="MHz">Megahertz (MHz)</option>
+                </optgroup>
+                 <optgroup label="Capacitance">
+                    <option value="F">Farads (F)</option>
+                    <option value="pF">Picofarads (pF)</option>
+                    <option value="nF">Nanofarads (nF)</option>
+                    <option value="uF">Microfarads (µF)</option>
+                </optgroup>
+                <optgroup label="Inductance">
+                    <option value="H">Henries (H)</option>
+                    <option value="mH">Millihenries (mH)</option>
+                    <option value="uH">Microhenries (µH)</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <button onclick="handleConvert()">Convert</button>
+
+        <div class="result" id="result">
+            <p>Your Result Will Appear Here</p>
+        </div>
+
+        <div class="progress-overlay" id="progressOverlay">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p class="footer-supervision">Under The Supervision Of<br>
+        <strong>Mr. Amjad Ali</strong><br>
+        Head Of The Department | Vice Principal
+        <br />
+        Department Of Electrical Engineering<br><br>
+        </p>
+        <hr>
+        <p>&copy; 2025</p>
+    </footer>
+
+    <script>
+        const resultDiv = document.getElementById('result');
+        const progressOverlay = document.getElementById('progressOverlay'); // Get the overlay element
+
+        function handleConvert() {
+            progressOverlay.classList.add('show'); // Show the overlay with progress bar
+            resultDiv.style.opacity = 0; // Hide the result text temporarily
+            resultDiv.innerHTML = "<p>Result: </p>"; // Clear previous result
+
+            setTimeout(convert, 800); // Simulate processing time for 800ms
+        }
+
+        function convert() {
+            const value = parseFloat(document.getElementById('value').value);
+            const fromUnit = document.getElementById('fromUnit').value;
+            const toUnit = document.getElementById('toUnit').value;
+            let result;
+
+            if (isNaN(value)) {
+                resultDiv.innerHTML = "<p>Result: Please enter a valid number.</p>";
+                resultDiv.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#3d2e2e" : "#ffe0e0";
+                resultDiv.style.borderColor = document.body.classList.contains('dark-mode') ? "#6b3e3e" : "#ffbaba";
+                resultDiv.style.color = document.body.classList.contains('dark-mode') ? "#ff8888" : "#d8000c";
+                progressOverlay.classList.remove('show'); // Hide progress bar
+                resultDiv.style.opacity = 1; // Show result box
+                return;
+            }
+
+            // Define conversion factors relative to a base unit for each type
+            const conversionFactors = {
+                // Voltage (Base: V)
+                "V": 1, "mV": 0.001, "kV": 1000,
+                // Current (Base: A)
+                "A": 1, "mA": 0.001, "kA": 1000,
+                // Resistance (Base: Ohm)
+                "Ohm": 1, "kOhm": 1000, "MOhm": 1000000,
+                // Power (Base: W)
+                "W": 1, "kW": 1000, "MW": 1000000, "HP": 745.7,
+                // Energy (Base: J)
+                "J": 1, "Wh": 3600, "kWh": 3600000,
+                // Frequency (Base: Hz)
+                "Hz": 1, "kHz": 1000, "MHz": 1000000,
+                // Capacitance (Base: F)
+                "F": 1, "pF": 1e-12, "nF": 1e-9, "uF": 1e-6,
+                // Inductance (Base: H)
+                "H": 1, "mH": 1e-3, "uH": 1e-6
+            };
+
+            const fromType = getUnitType(fromUnit);
+            const toType = getUnitType(toUnit);
+
+            if (fromType !== toType) {
+                resultDiv.innerHTML = "<p>Result: Cannot convert between different types of units (e.g., Voltage to Current).</p>";
+                resultDiv.style.backgroundColor = document.body.classList.contains('dark-mode') ? "#3d2e2e" : "#ffe0e0";
+                resultDiv.style.borderColor = document.body.classList.contains('dark-mode') ? "#6b3e3e" : "#ffbaba";
+                resultDiv.style.color = document.body.classList.contains('dark-mode') ? "#ff8888" : "#d8000c";
+                progressOverlay.classList.remove('show'); // Hide progress bar
+                resultDiv.style.opacity = 1; // Show result box
+                return;
+            }
+
+            if (fromUnit === toUnit) {
+                result = value;
+            } else {
+                // Convert 'fromUnit' to its base unit, then from base unit to 'toUnit'
+                const valueInBaseUnit = value * conversionFactors[fromUnit];
+                result = valueInBaseUnit / conversionFactors[toUnit];
+            }
+            
+            resultDiv.innerHTML = `Result: ${result.toFixed(6)} ${toUnit}`;
+            // Set colors based on dark mode status
+            if (document.body.classList.contains('dark-mode')) {
+                resultDiv.style.backgroundColor = "#2e3440";
+                resultDiv.style.borderColor = "#4c566a";
+                resultDiv.style.color = "#8fbcbb";
+            } else {
+                resultDiv.style.backgroundColor = "#e9f7ef";
+                resultDiv.style.borderColor = "#d4edda";
+                resultDiv.style.color = "#155724";
+            }
+            
+            progressOverlay.classList.remove('show'); // Hide progress bar
+            resultDiv.style.opacity = 1; // Show result box
+        }
+
+        function getUnitType(unit) {
+            if (["V", "mV", "kV"].includes(unit)) return "Voltage";
+            if (["A", "mA", "kA"].includes(unit)) return "Current";
+            if (["Ohm", "kOhm", "MOhm"].includes(unit)) return "Resistance";
+            if (["W", "kW", "MW", "HP"].includes(unit)) return "Power";
+            if (["Wh", "kWh", "J"].includes(unit)) return "Energy";
+            if (["Hz", "kHz", "MHz"].includes(unit)) return "Frequency";
+            if (["F", "pF", "nF", "uF"].includes(unit)) return "Capacitance";
+            if (["H", "mH", "uH"].includes(unit)) return "Inductance";
+            return "Unknown";
+        }
+
+        // You can add a toggle button for dark mode if needed
+        // For now, it's set to dark-mode by default in the body tag.
+    </script>
+</body>
+</html>
